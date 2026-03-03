@@ -1,0 +1,18 @@
+# Exclude database schema files
+src/utils/supabase/*.sql
+DISABLE_RLS_FOR_DEV.sql
+
+# Exclude local environment files
+.env.local
+.env.*.local
+
+# Exclude documentation and logs
+*.log
+README.md
+deployment_guide.md
+
+# Build artifacts
+.next/
+out/
+build/
+node_modules/

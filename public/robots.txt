@@ -1,0 +1,6 @@
+User-agent: *
+Allow: /
+Disallow: /auth/
+Disallow: /bio/admin/
+
+Sitemap: https://ebnn.xyz/sitemap.xml
