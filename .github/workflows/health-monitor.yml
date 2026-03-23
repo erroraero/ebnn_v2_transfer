@@ -1,0 +1,74 @@
+name: EBN Health Monitor
+
+on:
+  schedule:
+    - cron: "*/5 * * * *"   # every 5 minutes
+  workflow_dispatch:
+
+jobs:
+  health-check:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check Website Health
+        id: health
+        run: |
+          URL="https://www.ebnn.xyz"
+
+          START=$(date +%s%3N)
+          STATUS_CODE=$(curl -o /dev/null -s -w "%{http_code}" $URL)
+          END=$(date +%s%3N)
+
+          LATENCY=$((END-START))
+
+          IST_TIME=$(TZ="Asia/Kolkata" date +"%Y-%m-%d %I:%M:%S %p IST")
+
+          if [ "$STATUS_CODE" -eq 200 ]; then
+            echo "status=UP" >> $GITHUB_OUTPUT
+            echo "color=5763719" >> $GITHUB_OUTPUT
+            echo "msg=🟢 Service is Healthy" >> $GITHUB_OUTPUT
+          else
+            echo "status=DOWN" >> $GITHUB_OUTPUT
+            echo "color=15548997" >> $GITHUB_OUTPUT
+            echo "msg=🔴 Service is Down" >> $GITHUB_OUTPUT
+          fi
+
+          echo "code=$STATUS_CODE" >> $GITHUB_OUTPUT
+          echo "latency=$LATENCY ms" >> $GITHUB_OUTPUT
+          echo "time=$IST_TIME" >> $GITHUB_OUTPUT
+
+      - name: Send Discord Alert
+        run: |
+          curl -H "Content-Type: application/json" \
+          -X POST \
+          -d "{
+            \"embeds\": [{
+              \"title\": \"🌐 EBN Health Check • ${{ steps.health.outputs.status }}\",
+              \"description\": \"${{ steps.health.outputs.msg }}\",
+              \"color\": ${{ steps.health.outputs.color }},
+              \"fields\": [
+                {
+                  \"name\": \"🔗 Service\",
+                  \"value\": \"https://www.ebnn.xyz\",
+                  \"inline\": false
+                },
+                {
+                  \"name\": \"📡 Status Code\",
+                  \"value\": \"${{ steps.health.outputs.code }}\",
+                  \"inline\": true
+                },
+                {
+                  \"name\": \"⚡ Latency\",
+                  \"value\": \"${{ steps.health.outputs.latency }}\",
+                  \"inline\": true
+                },
+                {
+                  \"name\": \"⏱️ Time (IST)\",
+                  \"value\": \"${{ steps.health.outputs.time }}\",
+                  \"inline\": false
+                }
+              ],
+              \"footer\": {
+                \"text\": \"avrxt.git Monitoring System\"
+              }
+            }]
+          }" ${{ secrets.DISCORD_WEBHOOK }}
