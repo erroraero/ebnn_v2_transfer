@@ -1,13 +1,13 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, Suspense } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Github, Loader2, Shield, ArrowRight, AlertCircle, Smartphone, Monitor, ShieldCheck, Globe } from "lucide-react";
 import { signIn } from "@/lib/auth-client";
 import { useSearchParams, useParams } from "next/navigation";
 import Link from "next/link";
 
-export default function LoginPage() {
+function LoginContent() {
     const params = useParams();
     const searchParams = useSearchParams();
     const [loading, setLoading] = useState(false);
@@ -189,5 +189,13 @@ export default function LoginPage() {
             </div>
 
         </main>
+    );
+}
+
+export default function LoginPage() {
+    return (
+        <Suspense>
+            <LoginContent />
+        </Suspense>
     );
 }
