@@ -3,15 +3,6 @@ import { updateSession } from '@/utils/supabase/middleware'
 import { auth } from "@/lib/auth";
 
 export async function proxy(request: NextRequest) {
-  // 1. Better Auth Session check
-  const session = await auth.api.getSession({
-    headers: request.headers,
-  });
-
-  if (!session && request.nextUrl.pathname.startsWith("/guestbook")) {
-    return NextResponse.redirect(new URL("/v2/oauth/social/Github/login", request.url));
-  }
-
   // 2. Supabase Session Update
   return await updateSession(request)
 }

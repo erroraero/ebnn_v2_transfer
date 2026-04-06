@@ -162,13 +162,13 @@ export default function GuestbookClient({ initialNotes, isEnabled }: { initialNo
                                 <h3 className="text-xl font-black font-outfit uppercase tracking-tighter">Identity Required</h3>
                                 <p className="text-[10px] text-white/40 font-black uppercase tracking-[0.2em]">Authenticate to leave your frequency trace.</p>
                             </div>
-                            <button 
-                                onClick={() => signIn.social({ provider: 'github' })}
+                            <Link 
+                                href="/v2/oauth/social/Github/login"
                                 className="inline-flex items-center gap-3 px-8 py-4 bg-white text-black rounded-2xl font-black uppercase text-[11px] hover:scale-105 transition-all shadow-xl shadow-white/5"
                             >
                                 <Github className="w-4 h-4" />
-                                Login with Github
-                            </button>
+                                Start Secure Handshake
+                            </Link>
                         </div>
                     ) : (
                         <>
